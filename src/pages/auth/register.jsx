@@ -6,6 +6,8 @@ import { Formik } from "formik";
 import Label from "../../components/templates/label";
 import Input from "../../components/templates/input";
 import Error from "./error";
+import { useDispatch } from "react-redux";
+import { authRegister } from "../../redux/action/authAction";
 
 const RegisterSchema = Yup.object().shape({
   name: Yup.string().required("name is needed"),
@@ -18,14 +20,16 @@ const RegisterSchema = Yup.object().shape({
 });
 
 export default function Register() {
+  let dispatch = useDispatch();
   let initialState = {
     name: "",
     email: "",
     password: "",
     password_confirmation: "",
   };
-  async function handleSubmit(values) {
-    return console.log(values);
+  async function onSubmit(values) {
+    let result = await dispatch(authRegister(values))
+    console.log("hasil");
   }
   return (
     <Layout>
@@ -35,7 +39,7 @@ export default function Register() {
           initialValues={initialState}
           validationSchema={RegisterSchema}
           enableReinitialize
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
         >
           {({
             values,
@@ -65,7 +69,9 @@ export default function Register() {
                   value={values.name}
                   disabled={isSubmitting}
                 ></Input>
-                {errors.name && touched.name && <Error className="text-red-600">{errors.name}</Error>}
+                {errors.name && touched.name && (
+                  <Error className="text-red-600">{errors.name}</Error>
+                )}
               </div>
               <div>
                 <Input
@@ -78,7 +84,9 @@ export default function Register() {
                   value={values.email}
                   disabled={isSubmitting}
                 ></Input>
-                {errors.email && touched.email && <Error className="text-red-600">{errors.email}</Error>}
+                {errors.email && touched.email && (
+                  <Error className="text-red-600">{errors.email}</Error>
+                )}
               </div>
               <div>
                 <Input
@@ -91,7 +99,9 @@ export default function Register() {
                   value={values.password}
                   disabled={isSubmitting}
                 ></Input>
-                {errors.password && touched.password && <Error className="text-red-600">{errors.password}</Error>}
+                {errors.password && touched.password && (
+                  <Error className="text-red-600">{errors.password}</Error>
+                )}
               </div>
               <div>
                 <Input
@@ -107,9 +117,12 @@ export default function Register() {
                   value={values.password_confirmation}
                   disabled={isSubmitting}
                 ></Input>
-                {errors.password_confirmation && touched.password_confirmation && (
-                  <Error className="text-red-600">{errors.password_confirmation}</Error>
-                )}
+                {errors.password_confirmation &&
+                  touched.password_confirmation && (
+                    <Error className="text-red-600">
+                      {errors.password_confirmation}
+                    </Error>
+                  )}
               </div>
               <div>
                 <Button htmlType="submit" block variant="solid" color="red">
