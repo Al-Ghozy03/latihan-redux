@@ -7,30 +7,33 @@ import Label from "../../components/templates/label";
 import Input from "../../components/templates/input";
 import Error from "./error";
 import { useDispatch } from "react-redux";
-import { authRegister } from "../../redux/action/authAction";
+import { authRegister } from "../../redux/action/authRegister";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterSchema = Yup.object().shape({
   name: Yup.string().required("name is needed"),
   email: Yup.string().email().required("must be filled"),
   password: Yup.string().min(8, "min 8 characters").required("must be filled"),
-  password_confirmation: Yup.string()
+  passwordConfirmation: Yup.string()
     .min(8, "min 8 characters")
     .oneOf([Yup.ref("password")], "password must be same")
     .required("must be filled"),
 });
-
 export default function Register() {
   let dispatch = useDispatch();
   let initialState = {
     name: "",
     email: "",
     password: "",
-    password_confirmation: "",
+    passwordConfirmation: "",  
   };
+  let navigate = useNavigate();
   async function onSubmit(values) {
-    let result = await dispatch(authRegister(values))
-    console.log("hasil");
+    let result = await dispatch(authRegister(values));
+
+    if (result.status === "Success") return navigate("/dashboard");
   }
+
   return (
     <Layout>
       <div className="w-full px-20">
@@ -105,22 +108,22 @@ export default function Register() {
               </div>
               <div>
                 <Input
-                  id="password_confirmation"
-                  name="password_confirmation"
-                  placeHolder="password_confirmation"
+                  id="passwordConfirmation"
+                  name="passwordConfirmation"
+                  placeHolder="passwordConfirmation"
                   error={
-                    errors.password_confirmation &&
-                    touched.password_confirmation
+                    errors.passwordConfirmation &&
+                    touched.passwordConfirmation
                   }
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.password_confirmation}
+                  value={values.passwordConfirmation}
                   disabled={isSubmitting}
                 ></Input>
-                {errors.password_confirmation &&
-                  touched.password_confirmation && (
+                {errors.passwordConfirmation &&
+                  touched.passwordConfirmation && (
                     <Error className="text-red-600">
-                      {errors.password_confirmation}
+                      {errors.passwordConfirmation}
                     </Error>
                   )}
               </div>
@@ -132,6 +135,7 @@ export default function Register() {
             </form>
           )}
         </Formik>
+        <p>already have an account? <Link className="text-red-600" to="/login">Sign in</Link></p>
       </div>
     </Layout>
   );
