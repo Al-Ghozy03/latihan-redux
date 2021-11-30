@@ -1,11 +1,11 @@
 import { Formik } from "formik";
 import * as Yup from "yup";
-import React from "react";
+import React, { useState } from "react";
 import Layout from "../../components/layout/auth";
 import Button from "../../components/templates/button";
 import Input from "../../components/templates/input";
 import Error from "./error";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { authLogin } from "../../redux/action/authLogin";
 import { Link } from "react-router-dom";
@@ -25,16 +25,23 @@ export default function Login() {
   let navigate = useNavigate()
   let dispatch = useDispatch()
 
+  let loading = useSelector((state)=>state.auth.isLoading)
+  const [errorMsg,setErrorMsg] = useState({})
 
   async function onSubmit(values) {
     let result = await dispatch(authLogin(values))
+    console.log(result);
+    if (result.status === "fail"){
+      setErrorMsg(result)
+    }
     if (result.status === "Success") return navigate("/dashboard");
-
+    
   }
   return (
     <Layout>
       <div className="w-full px-20">
         <h1 className="text-xl uppercase font-bold mb-10">login page</h1>
+        <p>{errorMsg?.msg}</p>
         <Formik
           initialValues={initialState}
           validationSchema={LoginInitial}
@@ -89,7 +96,7 @@ export default function Login() {
               </div>
               <div>
                 <Button htmlType="submit" block variant="solid" color="red">
-                  Login
+                  {loading?"loading...":"login"}
                 </Button>
               </div>
             </form>

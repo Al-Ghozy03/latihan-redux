@@ -3,6 +3,7 @@ const initialState = {
   email: "",
   token: "",
   isAuth: false,
+  isLoading:false
 };
 
 export function authProcess(state = initialState, action) {
@@ -22,6 +23,18 @@ export function authProcess(state = initialState, action) {
       email: action.email,
       token: action.token,
       isAuth: false,
+    };
+  }
+  if (action.type === "loadingStart") {
+    return {
+      ...state,
+      isLoading:true
+    };
+  }
+  if (action.type === "loadingEnd") {
+    return {
+      ...state,
+      isLoading:false
     };
   }
   return state;

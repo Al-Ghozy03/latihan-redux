@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout/auth";
 import Button from "../../components/templates/button";
 import * as Yup from "yup";
@@ -20,6 +20,8 @@ const RegisterSchema = Yup.object().shape({
     .required("must be filled"),
 });
 export default function Register() {
+  const [errormsg, setErrormsg] = useState({})
+
   let dispatch = useDispatch();
   let initialState = {
     name: "",
@@ -30,6 +32,11 @@ export default function Register() {
   let navigate = useNavigate();
   async function onSubmit(values) {
     let result = await dispatch(authRegister(values));
+    console.log(result);
+    
+    if (result.status === 422) {
+      setErrormsg(result)
+    }
 
     if (result.status === "Success") return navigate("/dashboard");
   }
@@ -37,7 +44,8 @@ export default function Register() {
   return (
     <Layout>
       <div className="w-full px-20">
-        <h1 className="text-xl uppercase font-bold mb-10">register page</h1>
+        <h1 className="text-xl uppercase inset-0 font-bold mb-10">register page</h1>
+        <p className="text-red-600 italic">{errormsg?.data?.errors?.email?.msg}</p>
         <Formik
           initialValues={initialState}
           validationSchema={RegisterSchema}
